@@ -14,42 +14,35 @@
  * limitations under the License.
  */
 
-package com.alibaba.nacos.plugin.datasource.impl.base;
-
-import com.alibaba.nacos.common.utils.CollectionUtils;
-import com.alibaba.nacos.common.utils.StringUtils;
-import com.alibaba.nacos.plugin.datasource.constants.FieldConstant;
-import com.alibaba.nacos.plugin.datasource.constants.TableConstant;
-import com.alibaba.nacos.plugin.datasource.dialect.DatabaseDialect;
-import com.alibaba.nacos.plugin.datasource.impl.mysql.ConfigInfoMapperByMySql;
-import com.alibaba.nacos.plugin.datasource.manager.DatabaseDialectManager;
-import com.alibaba.nacos.plugin.datasource.model.MapperContext;
-import com.alibaba.nacos.plugin.datasource.model.MapperResult;
+package com.alibaba.nacos.plugin.datasource.impl.opengauss;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.alibaba.nacos.common.utils.CollectionUtils;
+import com.alibaba.nacos.common.utils.StringUtils;
+import com.alibaba.nacos.plugin.datasource.constants.FieldConstant;
+import com.alibaba.nacos.plugin.datasource.constants.TableConstant;
+import com.alibaba.nacos.plugin.datasource.mapper.ConfigInfoMapper;
+import com.alibaba.nacos.plugin.datasource.model.MapperContext;
+import com.alibaba.nacos.plugin.datasource.model.MapperResult;
+
 /**
  * The base implementation of ConfigInfoMapper.
  *
  * @author Long Yu
  **/
-public class BaseConfigInfoMapper extends ConfigInfoMapperByMySql {
+public class OpenGaussConfigInfoMapper extends AbstractMapperByGaussdb implements ConfigInfoMapper {
     
-    private DatabaseDialect databaseDialect;
-    
-    public BaseConfigInfoMapper() {
-        databaseDialect = DatabaseDialectManager.getInstance().getDialect(getDataSource());
-    }
-    
+
     public String getLimitPageSqlWithOffset(String sql, int startOffset, int pageSize) {
-        return databaseDialect.getLimitPageSqlWithOffset(sql, startOffset, pageSize);
+        return getDatabaseDialect().getLimitPageSqlWithOffset(sql, startOffset, pageSize);
     }
     
     public String getLimitPageSqlWithMark(String sql) {
-        return databaseDialect.getLimitPageSqlWithMark(sql);
+        return getDatabaseDialect().getLimitPageSqlWithMark(sql);
     }
     
     @Override
@@ -87,8 +80,7 @@ public class BaseConfigInfoMapper extends ConfigInfoMapperByMySql {
         int pageSize = context.getPageSize();
         String innerSql = getLimitPageSqlWithOffset(" SELECT id FROM config_info WHERE tenant_id LIKE ? ORDER BY id ",
                 startRow, pageSize);
-        // fix-bug 缺失括号
-        String sql = " SELECT data_id,group_id,app_name  FROM ( " + innerSql + " ) g, config_info t WHERE g.id = t.id  ";
+        String sql = " SELECT data_id,group_id,app_name  FROM ( " + innerSql + " g, config_info t WHERE g.id = t.id  ";
         return new MapperResult(sql, CollectionUtils.list(context.getWhereParameter(FieldConstant.TENANT_ID)));
     }
     
@@ -285,9 +277,5 @@ public class BaseConfigInfoMapper extends ConfigInfoMapperByMySql {
     public String getTableName() {
         return TableConstant.CONFIG_INFO;
     }
-
-    @Override
-    public String getFunction(String functionName) {
-        return databaseDialect.getFunction(functionName);
-    }
+    
 }

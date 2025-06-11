@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package com.alibaba.nacos.plugin.datasource.impl.postgresql;
+package com.alibaba.nacos.plugin.datasource.impl.kingbase;
 
 import com.alibaba.nacos.plugin.datasource.constants.DatabaseTypeConstant;
-import com.alibaba.nacos.plugin.datasource.enums.postgresql.TrustedPostgresqlFunctionEnum;
+import com.alibaba.nacos.plugin.datasource.constants.PrimaryKeyConstant;
 import com.alibaba.nacos.plugin.datasource.impl.base.BaseConfigInfoMapper;
 
 /**
- * The postgresql implementation of ConfigInfoMapper.
+ * The kingbase implementation of ConfigInfoMapper.
  *
- * @author Long Yu
+ * @author leon
  **/
-public class ConfigInfoMapperByPostgresql extends BaseConfigInfoMapper {
-    
-    @Override
-    public String getDataSource() {
-        return DatabaseTypeConstant.POSTGRESQL;
-    }
+public class ConfigInfoMapperByKingbase extends BaseConfigInfoMapper {
 
     @Override
-    public String getFunction(String functionName) {
-        return TrustedPostgresqlFunctionEnum.getFunctionByName(functionName);
+    public String getDataSource() {
+        return DatabaseTypeConstant.KINGBASE;
     }
 }

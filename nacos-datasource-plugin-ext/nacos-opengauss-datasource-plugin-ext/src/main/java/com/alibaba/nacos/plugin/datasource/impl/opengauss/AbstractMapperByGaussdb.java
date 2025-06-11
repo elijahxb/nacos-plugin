@@ -14,26 +14,39 @@
  * limitations under the License.
  */
 
-package com.alibaba.nacos.plugin.datasource.impl.postgresql;
+package com.alibaba.nacos.plugin.datasource.impl.opengauss;
 
 import com.alibaba.nacos.plugin.datasource.constants.DatabaseTypeConstant;
-import com.alibaba.nacos.plugin.datasource.enums.postgresql.TrustedPostgresqlFunctionEnum;
-import com.alibaba.nacos.plugin.datasource.impl.base.BaseConfigInfoMapper;
+import com.alibaba.nacos.plugin.datasource.dialect.DatabaseDialect;
+import com.alibaba.nacos.plugin.datasource.impl.enums.GaussdbFunctionEnum;
+import com.alibaba.nacos.plugin.datasource.manager.DatabaseDialectManager;
+import com.alibaba.nacos.plugin.datasource.mapper.AbstractMapper;
 
 /**
- * The postgresql implementation of ConfigInfoMapper.
+ * The base implementation of ConfigTagsRelationMapper.
  *
  * @author Long Yu
  **/
-public class ConfigInfoMapperByPostgresql extends BaseConfigInfoMapper {
+public abstract class AbstractMapperByGaussdb extends AbstractMapper {
     
+    private DatabaseDialect databaseDialect;
+
+    public DatabaseDialect getDatabaseDialect() {
+        return databaseDialect;
+    }
+
+    public AbstractMapperByGaussdb() {
+        databaseDialect = DatabaseDialectManager.getInstance().getDialect(getDataSource());
+    }
+
     @Override
     public String getDataSource() {
-        return DatabaseTypeConstant.POSTGRESQL;
+        return DatabaseTypeConstant.GUASSDB;
     }
 
     @Override
     public String getFunction(String functionName) {
-        return TrustedPostgresqlFunctionEnum.getFunctionByName(functionName);
+        return GaussdbFunctionEnum.getFunctionByName(functionName);
     }
+    
 }
